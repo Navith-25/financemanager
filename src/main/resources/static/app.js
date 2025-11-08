@@ -19,6 +19,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const budgetReportOutput = document.getElementById('report-output-budget');
     const savingsReportBtn = document.getElementById('report-btn-savings');
     const savingsReportOutput = document.getElementById('report-output-savings');
+    const categoryReportBtn = document.getElementById('report-btn-category');
+    const categoryReportOutput = document.getElementById('report-output-category');
+    const forecastReportBtn = document.getElementById('report-btn-forecast');
+    const forecastReportOutput = document.getElementById('report-output-forecast');
 
     const api = {
         get: (url) => fetch(url).then(res => res.json()),
@@ -300,6 +304,71 @@ document.addEventListener('DOMContentLoaded', () => {
             savingsReportOutput.innerHTML = 'Error loading report.';
         }
     });
+
+    categoryReportBtn.addEventListener('click', async () => {
+        categoryReportOutput.innerHTML = 'Loading...';
+        try {
+            const data = await api.get('/api/reports/category-expenses');
+            if (data.length === 0) {
+                categoryReportOutput.innerHTML = 'No data found. Try syncing first.';
+                return;
+            }
+            let table = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th>Total Spent</th>
+                            <th>Distribution</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${data.map(row => `
+                            <tr>
+                                <td>${row.category}</td>
+                                <td>$${row.totalSpent.toFixed(2)}</td>
+                                <td>${row.percentageOfTotal.toFixed(2)}%</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>`;
+            categoryReportOutput.innerHTML = table;
+        } catch (err) {
+            categoryReportOutput.innerHTML = 'Error loading report.';
+        }
+    });
+
+    forecastReportBtn.addEventListener('click', async () => {
+        forecastReportOutput.innerHTML = 'Loading...';
+        try {
+            const data = await api.get('/api/reports/forecasted-savings');
+            if (data.length === 0) {
+                forecastReportOutput.innerHTML = 'No data found. Add/sync savings goals first.';
+                return;
+            }
+            let table = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Forecast Month</th>
+                            <th>Estimated Total Savings</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${data.map(row => `
+                            <tr>
+                                <td>${row.forecastMonth}</td>
+                                <td>$${row.forecastedSavings.toFixed(2)}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>`;
+            forecastReportOutput.innerHTML = table;
+        } catch (err) {
+            forecastReportOutput.innerHTML = 'Error loading report.';
+        }
+    });
+
     function loadAllData() {
         loadTransactions();
         loadBudgets();

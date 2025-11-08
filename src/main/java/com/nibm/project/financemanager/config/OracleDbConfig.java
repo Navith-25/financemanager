@@ -19,9 +19,9 @@ import java.util.Map;
 @Configuration
 @EnableTransactionManagement
 @EnableJpaRepositories(
-        entityManagerFactoryRef = "oracleEntityManagerFactory", // Different name
-        transactionManagerRef = "oracleTransactionManager",   // Different name
-        basePackages = {"com.nibm.project.financemanager.repository.oracle"} // <-- CORRECT
+        entityManagerFactoryRef = "oracleEntityManagerFactory",
+        transactionManagerRef = "oracleTransactionManager",
+        basePackages = {"com.nibm.project.financemanager.repository.oracle"}
 )
 public class OracleDbConfig {
 

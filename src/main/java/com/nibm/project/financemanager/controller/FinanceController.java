@@ -1,11 +1,6 @@
 package com.nibm.project.financemanager.controller;
 
-import com.nibm.project.financemanager.dto.BudgetDTO;
-import com.nibm.project.financemanager.dto.SavingsGoalDTO;
-import com.nibm.project.financemanager.dto.TransactionDTO;
-import com.nibm.project.financemanager.dto.BudgetAdherenceReportDTO;
-import com.nibm.project.financemanager.dto.MonthlyExpenseReportDTO;
-import com.nibm.project.financemanager.dto.SavingsProgressReportDTO;
+import com.nibm.project.financemanager.dto.*;
 import com.nibm.project.financemanager.service.ReportService;
 import com.nibm.project.financemanager.service.LocalFinanceService;
 import com.nibm.project.financemanager.service.SyncService;
@@ -107,5 +102,13 @@ public class FinanceController {
     @GetMapping("/reports/savings-progress")
     public ResponseEntity<List<SavingsProgressReportDTO>> getSavingsProgressReport() {
         return ResponseEntity.ok(reportService.getSavingsProgressReport());
+    }
+    @GetMapping("/reports/category-expenses")
+    public ResponseEntity<List<CategoryExpenseReportDTO>> getCategoryExpenseReport() {
+        return ResponseEntity.ok(reportService.getCategoryExpenseReport());
+    }
+    @GetMapping("/reports/forecasted-savings")
+    public ResponseEntity<List<ForecastedSavingsReportDTO>> getForecastedSavingsReport() {
+        return ResponseEntity.ok(reportService.getForecastedSavingsReport());
     }
 }
