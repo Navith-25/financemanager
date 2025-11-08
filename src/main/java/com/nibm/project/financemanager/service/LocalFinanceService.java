@@ -82,6 +82,21 @@ public class LocalFinanceService {
         goalRepo.deleteById(id);
     }
 
+    public SavingsGoalDTO addContribution(Long goalId, Double amount) {
+
+        SqliteSavingsGoal goal = goalRepo.findById(goalId)
+                .orElseThrow(() -> new jakarta.persistence.EntityNotFoundException("Goal not found"));
+
+        goal.setCurrentAmount(goal.getCurrentAmount() + amount);
+
+        goal.setSynced(false);
+        goal.setUpdatedAt(Instant.now());
+
+        goal = goalRepo.save(goal);
+
+        return toDto(goal);
+    }
+
     private TransactionDTO toDto(SqliteTransaction tx) {
         return new TransactionDTO(tx.getId(), tx.getDescription(), tx.getAmount(), tx.getCategory(), tx.getDate(), tx.isSynced());
     }

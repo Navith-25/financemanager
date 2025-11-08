@@ -152,3 +152,16 @@ ul li {
 .delete-btn:hover {
     background: #c82333;
 }
+.contribute-btn {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8rem;
+}
+
+.contribute-btn:hover {
+    background: #0056b3;
+}

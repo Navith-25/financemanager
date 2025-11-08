@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // --- Global Elements ---
+
     const tabs = document.querySelectorAll('.tab-link');
     const contents = document.querySelectorAll('.tab-content');
     const syncButton = document.getElementById('sync-button');
@@ -30,7 +30,6 @@ document.addEventListener('DOMContentLoaded', () => {
         delete: (url) => fetch(url, { method: 'DELETE' }) // ADDED
     };
 
-    // --- Tab Switching Logic ---
     tabs.forEach(tab => {
         tab.addEventListener('click', () => {
             tabs.forEach(t => t.classList.remove('active'));
@@ -44,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const result = await api.post('/api/sync', {});
             syncStatus.textContent = `Sync complete! (T: ${result.transactions}, B: ${result.budgets}, G: ${result.goals})`;
-            loadAllData(); // Refresh all lists
+            loadAllData();
         } catch (err) {
             syncStatus.textContent = 'Sync failed.';
         }
@@ -124,9 +123,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const syncClass = g.isSynced ? 'status-synced' : 'status-local';
             goalList.innerHTML += `
                 <li>
-                    <span>${g.name} ($${g.currentAmount} / $${g.targetAmount})</span>
+                    <span>${g.name} ($${g.currentAmount.toFixed(2)} / $${g.targetAmount.toFixed(2)})</span>
                     <div class="item-actions">
                         <span class="${syncClass}">${sync}</span>
+                        
+                        <button class="contribute-btn" data-id="${g.id}" data-name="${g.name}">Add</button>
+                        
                         <button class="delete-btn goal-delete" data-id="${g.id}">Delete</button>
                     </div>
                 </li>`;
@@ -157,6 +159,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     goalList.addEventListener('click', async (e) => {
+
         if (e.target.classList.contains('goal-delete')) {
             const id = e.target.dataset.id;
             if (confirm('Are you sure you want to delete this savings goal?')) {
@@ -164,6 +167,30 @@ document.addEventListener('DOMContentLoaded', () => {
                     await api.delete(`/api/savings-goals/${id}`);
                     loadSavingsGoals();
                 } catch (err) { alert('Failed to delete savings goal.'); }
+            }
+        }
+        if (e.target.classList.contains('contribute-btn')) {
+            const id = e.target.dataset.id;
+            const name = e.target.dataset.name;
+
+            const amountStr = prompt(`Enter amount to add to '${name}':`);
+
+            if (!amountStr) return;
+
+            const amount = parseFloat(amountStr);
+
+            if (isNaN(amount) || amount <= 0) {
+                alert('Please enter a valid, positive amount.');
+                return;
+            }
+
+            try {
+
+                const data = { amount: amount };
+                await api.post(`/api/savings-goals/${id}/contribute`, data);
+                loadSavingsGoals();
+            } catch (err) {
+                alert('Failed to add contribution.');
             }
         }
     });

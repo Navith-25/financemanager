@@ -75,6 +75,20 @@ public class FinanceController {
         return ResponseEntity.ok().build();
     }
 
+    @PostMapping("/savings-goals/{id}/contribute")
+    public ResponseEntity<SavingsGoalDTO> addContribution(
+            @PathVariable Long id,
+            @RequestBody Map<String, Double> payload) {
+
+        Double amount = payload.get("amount");
+        if (amount == null || amount <= 0) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        SavingsGoalDTO updatedGoal = localService.addContribution(id, amount);
+        return ResponseEntity.ok(updatedGoal);
+    }
+
     @PostMapping("/sync")
     public ResponseEntity<Map<String, Integer>> synchronize() {
         return ResponseEntity.ok(syncService.synchronizeData());
