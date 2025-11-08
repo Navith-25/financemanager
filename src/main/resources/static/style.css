@@ -1,0 +1,89 @@
+/* In: src/main/resources/static/style.css */
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f7f6;
+    margin: 0;
+    line-height: 1.6;
+}
+header {
+    background: #333;
+    color: #fff;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+nav {
+    display: flex;
+    background: #555;
+}
+.tab-link {
+    padding: 1rem 2rem;
+    border: none;
+    background: #555;
+    color: #fff;
+    cursor: pointer;
+    font-size: 1rem;
+}
+.tab-link.active, .tab-link:hover {
+    background: #007bff;
+}
+.tab-content {
+    display: none;
+    padding: 2rem;
+}
+.tab-content.active {
+    display: block;
+}
+form {
+    background: #fff;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+form button {
+    grid-column: 1 / -1;
+    background: #28a745;
+    color: white;
+    padding: 0.75rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+}
+input {
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1rem;
+}
+ul {
+    list-style: none;
+    padding: 0;
+}
+ul li {
+    background: #fff;
+    padding: 1rem;
+    margin-bottom: 0.5rem;
+    border-radius: 5px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    display: flex;
+    justify-content: space-between;
+}
+.sync-area button {
+    background: #ffc107;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.sync-area p {
+    font-size: 0.8rem;
+    color: #f0f0f0;
+}
+.status-synced { color: #28a745; font-weight: bold; }
+.status-local { color: #dc3545; font-weight: bold; }

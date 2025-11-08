@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finance Manager</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+    <h1>Personal Finance Manager</h1>
+    <div class="sync-area">
+        <button id="sync-button">Sync to Cloud (Oracle)</button>
+        <p id="sync-status"></p>
+    </div>
+</header>
+
+<nav>
+    <button class="tab-link active" data-tab="transactions">Transactions</button>
+    <button class="tab-link" data-tab="budgets">Budgets</button>
+    <button class="tab-link" data-tab="savings">Savings Goals</button>
+</nav>
+
+<main>
+    <div id="transactions" class="tab-content active">
+        <h2>Add Expense</h2>
+        <form id="tx-form">
+            <input type="text" id="tx-desc" placeholder="Description" required>
+            <input type="number" id="tx-amount" placeholder="Amount" step="0.01" required>
+            <input type="text" id="tx-category" placeholder="Category" required>
+            <input type="date" id="tx-date" required>
+            <button type="submit">Add Transaction</button>
+        </form>
+        <h2>My Expenses</h2>
+        <ul id="tx-list"></ul>
+    </div>
+
+    <div id="budgets" class="tab-content">
+        <h2>Set Budget</h2>
+        <form id="budget-form">
+            <input type="text" id="budget-category" placeholder="Category" required>
+            <input type="number" id="budget-amount" placeholder="Monthly Amount" step="0.01" required>
+            <button type="submit">Set/Update Budget</button>
+        </form>
+        <h2>My Budgets</h2>
+        <ul id="budget-list"></ul>
+    </div>
+
+    <div id="savings" class="tab-content">
+        <h2>New Savings Goal</h2>
+        <form id="goal-form">
+            <input type="text" id="goal-name" placeholder="Goal Name (e.g., New Phone)" required>
+            <input type="number" id="goal-target" placeholder="Target Amount" step="0.01" required>
+            <button type="submit">Add Goal</button>
+        </form>
+        <h2>My Goals</h2>
+        <ul id="goal-list"></ul>
+    </div>
+</main>
+<script src="app.js"></script>
+</body>
+</html>
