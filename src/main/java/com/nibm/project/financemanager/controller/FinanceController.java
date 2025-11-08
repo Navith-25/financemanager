@@ -3,6 +3,11 @@ package com.nibm.project.financemanager.controller;
 import com.nibm.project.financemanager.dto.BudgetDTO;
 import com.nibm.project.financemanager.dto.SavingsGoalDTO;
 import com.nibm.project.financemanager.dto.TransactionDTO;
+// Import the new DTOs and Service
+import com.nibm.project.financemanager.dto.BudgetAdherenceReportDTO;
+import com.nibm.project.financemanager.dto.MonthlyExpenseReportDTO;
+import com.nibm.project.financemanager.dto.SavingsProgressReportDTO;
+import com.nibm.project.financemanager.service.ReportService; // <-- Add
 import com.nibm.project.financemanager.service.LocalFinanceService;
 import com.nibm.project.financemanager.service.SyncService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +25,8 @@ public class FinanceController {
     private LocalFinanceService localService;
     @Autowired
     private SyncService syncService;
+    @Autowired
+    private ReportService reportService; // <-- Add ReportService
 
     // --- Transaction Endpoints  ---
     @PostMapping("/transactions")
@@ -55,5 +62,22 @@ public class FinanceController {
     @PostMapping("/sync")
     public ResponseEntity<Map<String, Integer>> synchronize() {
         return ResponseEntity.ok(syncService.synchronizeData());
+    }
+
+    // --- NEW REPORTING ENDPOINTS ---
+
+    @GetMapping("/reports/monthly-expenses")
+    public ResponseEntity<List<MonthlyExpenseReportDTO>> getMonthlyExpenseReport() {
+        return ResponseEntity.ok(reportService.getMonthlyExpenseReport());
+    }
+
+    @GetMapping("/reports/budget-adherence")
+    public ResponseEntity<List<BudgetAdherenceReportDTO>> getBudgetAdherenceReport() {
+        return ResponseEntity.ok(reportService.getBudgetAdherenceReport());
+    }
+
+    @GetMapping("/reports/savings-progress")
+    public ResponseEntity<List<SavingsProgressReportDTO>> getSavingsProgressReport() {
+        return ResponseEntity.ok(reportService.getSavingsProgressReport());
     }
 }

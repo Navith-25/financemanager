@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Check;
+import java.time.Instant;
 
 @Entity
 @Table(name = "CENTRAL_SAVINGS_GOALS")
@@ -17,7 +18,7 @@ public class OracleSavingsGoal {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "goal_seq")
     @SequenceGenerator(name = "goal_seq", sequenceName = "GOAL_SEQ", allocationSize = 1)
     private Long id;
-
+    private Instant updatedAt;
     private String name;
 
     @Column(nullable = false)

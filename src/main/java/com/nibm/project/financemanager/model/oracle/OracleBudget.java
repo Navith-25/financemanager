@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import java.time.Instant;
 
 
 @Entity
@@ -18,6 +19,7 @@ public class OracleBudget {
     @SequenceGenerator(name = "budget_seq", sequenceName = "BUDGET_SEQ", allocationSize = 1)
     private Long id;
     private String category;
+    private Instant updatedAt;
     @Column(nullable = false)
     private Double amount;
     @Column(unique = true)

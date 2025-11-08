@@ -49,29 +49,28 @@ public class SyncService {
         List<SqliteTransaction> unsynced = sqliteTxRepo.findByIsSynced(false);
         int count = 0;
         for (SqliteTransaction local : unsynced) {
-            if (syncSingleTransactionToOracle(local)) {
-                local.setSynced(true); // Mark as synced
-                sqliteTxRepo.save(local);
-                count++;
-            }
+            // Use the Oracle procedure to sync
+            syncSingleTransactionToOracle(local);
+
+            // Mark as synced in SQLite
+            local.setSynced(true);
+            sqliteTxRepo.save(local);
+            count++;
         }
         return count;
     }
 
     @Transactional(transactionManager = "oracleTransactionManager")
-    public boolean syncSingleTransactionToOracle(SqliteTransaction local) {
-
-        if (oracleTxRepo.existsByLocalId(local.getId())) {
-            return true;
-        }
-        OracleTransaction central = new OracleTransaction();
-        central.setLocalId(local.getId());
-        central.setDescription(local.getDescription());
-        central.setAmount(local.getAmount());
-        central.setCategory(local.getCategory());
-        central.setDate(local.getDate());
-        oracleTxRepo.save(central);
-        return true;
+    public void syncSingleTransactionToOracle(SqliteTransaction local) {
+        // This now calls our PL/SQL MERGE procedure
+        oracleTxRepo.syncTransaction(
+                local.getId(),
+                local.getDescription(),
+                local.getAmount(),
+                local.getCategory(),
+                local.getDate(),
+                local.getUpdatedAt()
+        );
     }
 
     // --- Repeat for Budgets ---
@@ -80,30 +79,48 @@ public class SyncService {
         List<SqliteBudget> unsynced = sqliteBudgetRepo.findByIsSynced(false);
         int count = 0;
         for (SqliteBudget local : unsynced) {
-            if (syncSingleBudgetToOracle(local)) {
-                local.setSynced(true);
-                sqliteBudgetRepo.save(local);
-                count++;
-            }
+            syncSingleBudgetToOracle(local);
+            local.setSynced(true);
+            sqliteBudgetRepo.save(local);
+            count++;
         }
         return count;
     }
 
     @Transactional(transactionManager = "oracleTransactionManager")
-    public boolean syncSingleBudgetToOracle(SqliteBudget local) {
-        if (oracleBudgetRepo.existsByLocalId(local.getId())) {
-            return true;
-        }
-        OracleBudget central = new OracleBudget();
-        central.setLocalId(local.getId());
-        central.setCategory(local.getCategory());
-        central.setAmount(local.getAmount());
-        oracleBudgetRepo.save(central);
-        return true;
+    public void syncSingleBudgetToOracle(SqliteBudget local) {
+        // This now calls our PL/SQL MERGE procedure
+        oracleBudgetRepo.syncBudget(
+                local.getId(),
+                local.getCategory(),
+                local.getAmount(),
+                local.getUpdatedAt()
+        );
     }
 
+    // --- Repeat for Savings Goals (This was missing from your file) ---
     @Transactional(transactionManager = "sqliteTransactionManager")
-    public int syncSavingsGoals() { /* ... */ return 0; }
+    public int syncSavingsGoals() {
+        List<SqliteSavingsGoal> unsynced = sqliteGoalRepo.findByIsSynced(false);
+        int count = 0;
+        for (SqliteSavingsGoal local : unsynced) {
+            syncSingleGoalToOracle(local);
+            local.setSynced(true);
+            sqliteGoalRepo.save(local);
+            count++;
+        }
+        return count;
+    }
+
     @Transactional(transactionManager = "oracleTransactionManager")
-    public boolean syncSingleGoalToOracle(SqliteSavingsGoal local) { /* ... */ return true; }
+    public void syncSingleGoalToOracle(SqliteSavingsGoal local) {
+        // This now calls our PL/SQL MERGE procedure
+        oracleGoalRepo.syncSavingsGoal(
+                local.getId(),
+                local.getName(),
+                local.getTargetAmount(),
+                local.getCurrentAmount(),
+                local.getUpdatedAt()
+        );
+    }
 }

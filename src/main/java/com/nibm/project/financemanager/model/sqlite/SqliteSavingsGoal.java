@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import java.time.Instant;
 
 
 @Entity
@@ -21,5 +22,6 @@ public class SqliteSavingsGoal {
     private Double targetAmount;
     private Double currentAmount = 0.0;
     private boolean isSynced = false;
+    private Instant updatedAt;
 
 }

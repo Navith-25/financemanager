@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant; // <-- Add this import
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,6 +33,7 @@ public class LocalFinanceService {
         tx.setCategory(dto.category());
         tx.setDate(dto.date());
         tx.setSynced(false); // Mark as new
+        tx.setUpdatedAt(Instant.now()); // <-- Set timestamp
         tx = txRepo.save(tx);
         return toDto(tx);
     }
@@ -49,6 +51,7 @@ public class LocalFinanceService {
         }
         budget.setAmount(dto.amount());
         budget.setSynced(false); // Mark for sync
+        budget.setUpdatedAt(Instant.now()); // <-- Set timestamp
         budget = budgetRepo.save(budget);
         return toDto(budget);
     }
@@ -63,6 +66,7 @@ public class LocalFinanceService {
         goal.setTargetAmount(dto.targetAmount());
         goal.setCurrentAmount(0.0);
         goal.setSynced(false);
+        goal.setUpdatedAt(Instant.now()); // <-- Set timestamp
         goal = goalRepo.save(goal);
         return toDto(goal);
     }
@@ -71,6 +75,8 @@ public class LocalFinanceService {
     }
 
     // --- Private DTO Mappers ---
+    // (Ensure these mappers are updated if you added 'updatedAt' to the DTO,
+    // but it's not required for the DTOs)
     private TransactionDTO toDto(SqliteTransaction tx) {
         return new TransactionDTO(tx.getId(), tx.getDescription(), tx.getAmount(), tx.getCategory(), tx.getDate(), tx.isSynced());
     }

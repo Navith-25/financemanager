@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.time.LocalDate;
+import java.time.Instant;
 
 @Entity
 @Table(name = "CENTRAL_TRANSACTIONS")
@@ -20,6 +21,7 @@ public class OracleTransaction {
     private String description;
     private Double amount;
     private String category;
+    private Instant updatedAt;
 
     @Column(name = "TRANSACTION_DATE")
     private LocalDate date;

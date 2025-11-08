@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import java.time.Instant;
 
 @Entity
 @Table(name = "local_budgets")
@@ -19,5 +20,6 @@ public class SqliteBudget {
     @Column(nullable = false)
     private Double amount;
     private boolean isSynced = false;
+    private Instant updatedAt;
 
 }
