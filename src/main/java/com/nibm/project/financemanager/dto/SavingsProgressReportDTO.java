@@ -1,10 +1,14 @@
 package com.nibm.project.financemanager.dto;
 
 import java.math.BigDecimal;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-public record SavingsProgressReportDTO(
-        String name,
-        BigDecimal targetAmount,
-        BigDecimal currentAmount,
-        BigDecimal progressPercentage
-) {}
+@Data
+@NoArgsConstructor
+public class SavingsProgressReportDTO {
+    private String name;
+    private BigDecimal targetAmount;
+    private BigDecimal currentAmount;
+    private BigDecimal progressPercentage;
+}
