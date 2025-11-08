@@ -82,12 +82,11 @@ public class ReportService {
             SELECT
                 category,
                 SUM(amount) AS "totalSpent",
-                -- This SQL calculates the percentage of the grand total
                 (SUM(amount) / (SELECT SUM(amount) FROM CENTRAL_TRANSACTIONS)) * 100 AS "percentageOfTotal"
             FROM
                 CENTRAL_TRANSACTIONS
             WHERE
-                amount > 0 -- Assuming expenses are positive
+                amount > 0 
             GROUP BY
                 category
             ORDER BY
@@ -98,7 +97,6 @@ public class ReportService {
     public List<ForecastedSavingsReportDTO> getForecastedSavingsReport() {
         String sql = """
             WITH MonthlyContributions AS (
-                -- Find the net change in savings each month
                 SELECT
                     TO_CHAR(updated_at, 'YYYY-MM') AS month,
                     SUM(current_amount - LAG(current_amount, 1, 0) OVER (PARTITION BY local_id ORDER BY updated_at)) AS net_change
@@ -108,22 +106,18 @@ public class ReportService {
                     TO_CHAR(updated_at, 'YYYY-MM')
             ),
             AvgSavings AS (
-                -- Calculate the average amount saved per month
                 SELECT AVG(net_change) AS "avgMonthlySave"
                 FROM MonthlyContributions
                 WHERE net_change > 0
             ),
             CurrentTotal AS (
-                -- Get the current total saved
                 SELECT SUM(current_amount) AS "currentTotal" FROM CENTRAL_SAVINGS_GOALS
             )
-            -- Project for the next 6 months
             SELECT
                 TO_CHAR(ADD_MONTHS(TRUNC(SYSDATE, 'MM'), level), 'YYYY-MM') AS "forecastMonth",
                 (NVL(C."currentTotal", 0) + (NVL(A."avgMonthlySave", 0) * level)) AS "forecastedSavings"
             FROM
                 AvgSavings A, CurrentTotal C
-            -- This Oracle syntax generates 6 rows (1 to 6)
             CONNECT BY level <= 6
         """;
         return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(ForecastedSavingsReportDTO.class));
