@@ -19,6 +19,7 @@
     <button class="tab-link active" data-tab="transactions">Transactions</button>
     <button class="tab-link" data-tab="budgets">Budgets</button>
     <button class="tab-link" data-tab="savings">Savings Goals</button>
+    <button class="tab-link" data-tab="reports">Reports</button>
 </nav>
 
 <main>
@@ -55,6 +56,29 @@
         </form>
         <h2>My Goals</h2>
         <ul id="goal-list"></ul>
+    </div>
+
+    <div id="reports" class="tab-content">
+        <h2>Cloud Reports (From Oracle)</h2>
+        <p>These reports are generated from the central, synced database. Make sure to sync first for the latest data.</p>
+
+        <div class="report-section">
+            <h3>Monthly Expense Report</h3>
+            <button id="report-btn-monthly">Generate Monthly Report</button>
+            <div id="report-output-monthly" class="report-output"></div>
+        </div>
+
+        <div class="report-section">
+            <h3>Budget Adherence Report</h3>
+            <button id="report-btn-budget">Generate Budget Report</button>
+            <div id="report-output-budget" class="report-output"></div>
+        </div>
+
+        <div class="report-section">
+            <h3>Savings Progress Report</h3>
+            <button id="report-btn-savings">Generate Savings Report</button>
+            <div id="report-output-savings" class="report-output"></div>
+        </div>
     </div>
 </main>
 <script src="app.js"></script>

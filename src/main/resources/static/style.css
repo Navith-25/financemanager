@@ -87,3 +87,39 @@ ul li {
 }
 .status-synced { color: #28a745; font-weight: bold; }
 .status-local { color: #dc3545; font-weight: bold; }
+
+/* --- ADDED STYLES FOR REPORTS --- */
+.report-section {
+    background: #fff;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+}
+
+.report-section button {
+    background: #007bff;
+    color: white;
+    padding: 0.75rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+}
+
+.report-output table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+
+.report-output th, .report-output td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.report-output th {
+    background-color: #f2f2f2;
+}
