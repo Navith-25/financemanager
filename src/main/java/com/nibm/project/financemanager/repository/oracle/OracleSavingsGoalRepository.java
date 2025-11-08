@@ -17,4 +17,6 @@ public interface OracleSavingsGoalRepository extends JpaRepository<OracleSavings
             @Param("p_current_amount") Double currentAmount,
             @Param("p_updated_at") Instant updatedAt
     );
+
+    void deleteByLocalId(Long localId);
 }

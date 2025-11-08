@@ -5,17 +5,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const syncButton = document.getElementById('sync-button');
     const syncStatus = document.getElementById('sync-status');
 
-    // --- Form Elements ---
     const txForm = document.getElementById('tx-form');
     const budgetForm = document.getElementById('budget-form');
     const goalForm = document.getElementById('goal-form');
 
-    // --- List Elements ---
     const txList = document.getElementById('tx-list');
     const budgetList = document.getElementById('budget-list');
     const goalList = document.getElementById('goal-list');
 
-    // --- ADDED: Report Elements ---
     const monthlyReportBtn = document.getElementById('report-btn-monthly');
     const monthlyReportOutput = document.getElementById('report-output-monthly');
     const budgetReportBtn = document.getElementById('report-btn-budget');
@@ -23,14 +20,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const savingsReportBtn = document.getElementById('report-btn-savings');
     const savingsReportOutput = document.getElementById('report-output-savings');
 
-    // --- API Helper ---
     const api = {
         get: (url) => fetch(url).then(res => res.json()),
         post: (url, data) => fetch(url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
-        }).then(res => res.json())
+        }).then(res => res.json()),
+        delete: (url) => fetch(url, { method: 'DELETE' }) // ADDED
     };
 
     // --- Tab Switching Logic ---
@@ -42,8 +39,6 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById(tab.dataset.tab).classList.add('active');
         });
     });
-
-    // --- Sync Logic ---
     syncButton.addEventListener('click', async () => {
         syncStatus.textContent = 'Syncing...';
         try {
@@ -54,8 +49,6 @@ document.addEventListener('DOMContentLoaded', () => {
             syncStatus.textContent = 'Sync failed.';
         }
     });
-
-    // --- Transaction Logic ---
     txForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const data = {
@@ -78,12 +71,13 @@ document.addEventListener('DOMContentLoaded', () => {
             txList.innerHTML += `
                 <li>
                     <span>${tx.date}: ${tx.description} ($${tx.amount}) [${tx.category}]</span>
-                    <span class="${syncClass}">${sync}</span>
+                    <div class="item-actions">
+                        <span class="${syncClass}">${sync}</span>
+                        <button class="delete-btn tx-delete" data-id="${tx.id}">Delete</button>
+                    </div>
                 </li>`;
         });
     }
-
-    // --- Budget Logic ---
     budgetForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const data = {
@@ -104,12 +98,13 @@ document.addEventListener('DOMContentLoaded', () => {
             budgetList.innerHTML += `
                 <li>
                     <span>${b.category}: $${b.amount} / month</span>
-                    <span class="${syncClass}">${sync}</span>
+                    <div class="item-actions">
+                        <span class="${syncClass}">${sync}</span>
+                        <button class="delete-btn budget-delete" data-id="${b.id}">Delete</button>
+                    </div>
                 </li>`;
         });
     }
-
-    // --- Savings Goal Logic ---
     goalForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const data = {
@@ -130,14 +125,48 @@ document.addEventListener('DOMContentLoaded', () => {
             goalList.innerHTML += `
                 <li>
                     <span>${g.name} ($${g.currentAmount} / $${g.targetAmount})</span>
-                    <span class="${syncClass}">${sync}</span>
+                    <div class="item-actions">
+                        <span class="${syncClass}">${sync}</span>
+                        <button class="delete-btn goal-delete" data-id="${g.id}">Delete</button>
+                    </div>
                 </li>`;
         });
     }
+    txList.addEventListener('click', async (e) => {
+        if (e.target.classList.contains('tx-delete')) {
+            const id = e.target.dataset.id;
+            if (confirm('Are you sure you want to delete this transaction?')) {
+                try {
+                    await api.delete(`/api/transactions/${id}`);
+                    loadTransactions();
+                } catch (err) { alert('Failed to delete transaction.'); }
+            }
+        }
+    });
 
-    // --- ADDED: Reporting Logic ---
+    budgetList.addEventListener('click', async (e) => {
+        if (e.target.classList.contains('budget-delete')) {
+            const id = e.target.dataset.id;
+            if (confirm('Are you sure you want to delete this budget?')) {
+                try {
+                    await api.delete(`/api/budgets/${id}`);
+                    loadBudgets();
+                } catch (err) { alert('Failed to delete budget.'); }
+            }
+        }
+    });
 
-    // Monthly Expense Report
+    goalList.addEventListener('click', async (e) => {
+        if (e.target.classList.contains('goal-delete')) {
+            const id = e.target.dataset.id;
+            if (confirm('Are you sure you want to delete this savings goal?')) {
+                try {
+                    await api.delete(`/api/savings-goals/${id}`);
+                    loadSavingsGoals();
+                } catch (err) { alert('Failed to delete savings goal.'); }
+            }
+        }
+    });
     monthlyReportBtn.addEventListener('click', async () => {
         monthlyReportOutput.innerHTML = 'Loading...';
         try {
@@ -170,8 +199,6 @@ document.addEventListener('DOMContentLoaded', () => {
             monthlyReportOutput.innerHTML = 'Error loading report.';
         }
     });
-
-    // Budget Adherence Report
     budgetReportBtn.addEventListener('click', async () => {
         budgetReportOutput.innerHTML = 'Loading...';
         try {
@@ -233,7 +260,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <tbody>
                         ${data.map(row => `
                             <tr>
-                                <td>${row.name}</td>
+                                D<td>${row.name}</td>
                                 <td>$${row.targetAmount.toFixed(2)}</td>
                                 <td>$${row.currentAmount.toFixed(2)}</td>
                                 <td>${row.progressPercentage.toFixed(1)}%</td>
@@ -246,8 +273,6 @@ document.addEventListener('DOMContentLoaded', () => {
             savingsReportOutput.innerHTML = 'Error loading report.';
         }
     });
-
-    // --- Initial Load ---
     function loadAllData() {
         loadTransactions();
         loadBudgets();

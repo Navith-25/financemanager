@@ -4,8 +4,8 @@ import java.math.BigDecimal;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data // Adds getters, setters, toString, etc.
-@NoArgsConstructor // Adds the default constructor Spring needs
+@Data
+@NoArgsConstructor
 public class MonthlyExpenseReportDTO {
     private String month;
     private String category;

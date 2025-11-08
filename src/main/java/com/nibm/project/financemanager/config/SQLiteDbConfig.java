@@ -26,7 +26,7 @@ import java.util.Map;
 )
 public class SQLiteDbConfig {
 
-    @Primary // <-- Mark SQLite as the primary datasource
+    @Primary
     @Bean(name = "sqliteDataSourceProperties")
     @ConfigurationProperties("sqlite.datasource")
     public DataSourceProperties sqliteDataSourceProperties() {

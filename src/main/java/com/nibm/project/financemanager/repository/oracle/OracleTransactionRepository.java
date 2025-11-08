@@ -19,4 +19,6 @@ public interface OracleTransactionRepository extends JpaRepository<OracleTransac
             @Param("p_date") LocalDate date,
             @Param("p_updated_at") Instant updatedAt
     );
+
+    void deleteByLocalId(Long localId);
 }

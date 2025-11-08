@@ -14,20 +14,15 @@ import javax.sql.DataSource;
 import java.util.List;
 
 @Service
-@Transactional(transactionManager = "oracleTransactionManager") // Reports run on Oracle
+@Transactional(transactionManager = "oracleTransactionManager")
 public class ReportService {
 
     private final JdbcTemplate jdbcTemplate;
 
-    // We need to specifically ask for the Oracle datasource
     @Autowired
     public ReportService(@Qualifier("oracleDataSource") DataSource oracleDataSource) {
         this.jdbcTemplate = new JdbcTemplate(oracleDataSource);
     }
-
-    /**
-     * Report 1: Monthly Expenditure Analysis (by Category)
-     */
     public List<MonthlyExpenseReportDTO> getMonthlyExpenseReport() {
         String sql = """
             SELECT
@@ -43,10 +38,6 @@ public class ReportService {
         """;
         return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(MonthlyExpenseReportDTO.class));
     }
-
-    /**
-     * Report 2: Budget Adherence Tracking
-     */
     public List<BudgetAdherenceReportDTO> getBudgetAdherenceReport() {
         String sql = """
             WITH MonthlyExpenses AS (
@@ -74,10 +65,6 @@ public class ReportService {
         """;
         return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(BudgetAdherenceReportDTO.class));
     }
-
-    /**
-     * Report 3: Savings Goal Progress
-     */
     public List<SavingsProgressReportDTO> getSavingsProgressReport() {
         String sql = """
             SELECT

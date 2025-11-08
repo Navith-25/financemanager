@@ -3,11 +3,10 @@ package com.nibm.project.financemanager.controller;
 import com.nibm.project.financemanager.dto.BudgetDTO;
 import com.nibm.project.financemanager.dto.SavingsGoalDTO;
 import com.nibm.project.financemanager.dto.TransactionDTO;
-// Import the new DTOs and Service
 import com.nibm.project.financemanager.dto.BudgetAdherenceReportDTO;
 import com.nibm.project.financemanager.dto.MonthlyExpenseReportDTO;
 import com.nibm.project.financemanager.dto.SavingsProgressReportDTO;
-import com.nibm.project.financemanager.service.ReportService; // <-- Add
+import com.nibm.project.financemanager.service.ReportService;
 import com.nibm.project.financemanager.service.LocalFinanceService;
 import com.nibm.project.financemanager.service.SyncService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,9 +25,8 @@ public class FinanceController {
     @Autowired
     private SyncService syncService;
     @Autowired
-    private ReportService reportService; // <-- Add ReportService
+    private ReportService reportService;
 
-    // --- Transaction Endpoints  ---
     @PostMapping("/transactions")
     public ResponseEntity<TransactionDTO> addTransaction(@RequestBody TransactionDTO dto) {
         return ResponseEntity.ok(localService.addTransaction(dto));
@@ -38,7 +36,13 @@ public class FinanceController {
         return ResponseEntity.ok(localService.getAllTransactions());
     }
 
-    // --- Budget Endpoints  ---
+    @DeleteMapping("/transactions/{id}")
+    public ResponseEntity<Void> deleteTransaction(@PathVariable Long id) {
+        syncService.deleteTransactionFromOracle(id);
+        localService.deleteTransaction(id);
+        return ResponseEntity.ok().build();
+    }
+
     @PostMapping("/budgets")
     public ResponseEntity<BudgetDTO> setBudget(@RequestBody BudgetDTO dto) {
         return ResponseEntity.ok(localService.setBudget(dto));
@@ -48,7 +52,13 @@ public class FinanceController {
         return ResponseEntity.ok(localService.getAllBudgets());
     }
 
-    // --- Savings Goal Endpoints  ---
+    @DeleteMapping("/budgets/{id}")
+    public ResponseEntity<Void> deleteBudget(@PathVariable Long id) {
+        syncService.deleteBudgetFromOracle(id);
+        localService.deleteBudget(id);
+        return ResponseEntity.ok().build();
+    }
+
     @PostMapping("/savings-goals")
     public ResponseEntity<SavingsGoalDTO> addSavingsGoal(@RequestBody SavingsGoalDTO dto) {
         return ResponseEntity.ok(localService.addSavingsGoal(dto));
@@ -58,13 +68,17 @@ public class FinanceController {
         return ResponseEntity.ok(localService.getAllSavingsGoals());
     }
 
-    // --- Sync Endpoint  ---
+    @DeleteMapping("/savings-goals/{id}")
+    public ResponseEntity<Void> deleteSavingsGoal(@PathVariable Long id) {
+        syncService.deleteSavingsGoalFromOracle(id);
+        localService.deleteSavingsGoal(id);
+        return ResponseEntity.ok().build();
+    }
+
     @PostMapping("/sync")
     public ResponseEntity<Map<String, Integer>> synchronize() {
         return ResponseEntity.ok(syncService.synchronizeData());
     }
-
-    // --- NEW REPORTING ENDPOINTS ---
 
     @GetMapping("/reports/monthly-expenses")
     public ResponseEntity<List<MonthlyExpenseReportDTO>> getMonthlyExpenseReport() {

@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant; // <-- Add this import
+import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,15 +25,14 @@ public class LocalFinanceService {
     @Autowired private SqliteBudgetRepository budgetRepo;
     @Autowired private SqliteSavingsGoalRepository goalRepo;
 
-    // --- Transaction Methods ---
     public TransactionDTO addTransaction(TransactionDTO dto) {
         SqliteTransaction tx = new SqliteTransaction();
         tx.setDescription(dto.description());
         tx.setAmount(dto.amount());
         tx.setCategory(dto.category());
         tx.setDate(dto.date());
-        tx.setSynced(false); // Mark as new
-        tx.setUpdatedAt(Instant.now()); // <-- Set timestamp
+        tx.setSynced(false);
+        tx.setUpdatedAt(Instant.now());
         tx = txRepo.save(tx);
         return toDto(tx);
     }
@@ -41,17 +40,19 @@ public class LocalFinanceService {
         return txRepo.findAll().stream().map(this::toDto).collect(Collectors.toList());
     }
 
-    // --- Budget Methods ---
+    public void deleteTransaction(Long id) {
+        txRepo.deleteById(id);
+    }
+
     public BudgetDTO setBudget(BudgetDTO dto) {
-        // Find existing budget or create new
         SqliteBudget budget = budgetRepo.findByCategory(dto.category());
         if (budget == null) {
             budget = new SqliteBudget();
             budget.setCategory(dto.category());
         }
         budget.setAmount(dto.amount());
-        budget.setSynced(false); // Mark for sync
-        budget.setUpdatedAt(Instant.now()); // <-- Set timestamp
+        budget.setSynced(false);
+        budget.setUpdatedAt(Instant.now());
         budget = budgetRepo.save(budget);
         return toDto(budget);
     }
@@ -59,14 +60,17 @@ public class LocalFinanceService {
         return budgetRepo.findAll().stream().map(this::toDto).collect(Collectors.toList());
     }
 
-    // --- Savings Goal Methods ---
+    public void deleteBudget(Long id) {
+        budgetRepo.deleteById(id);
+    }
+
     public SavingsGoalDTO addSavingsGoal(SavingsGoalDTO dto) {
         SqliteSavingsGoal goal = new SqliteSavingsGoal();
         goal.setName(dto.name());
         goal.setTargetAmount(dto.targetAmount());
         goal.setCurrentAmount(0.0);
         goal.setSynced(false);
-        goal.setUpdatedAt(Instant.now()); // <-- Set timestamp
+        goal.setUpdatedAt(Instant.now());
         goal = goalRepo.save(goal);
         return toDto(goal);
     }
@@ -74,9 +78,10 @@ public class LocalFinanceService {
         return goalRepo.findAll().stream().map(this::toDto).collect(Collectors.toList());
     }
 
-    // --- Private DTO Mappers ---
-    // (Ensure these mappers are updated if you added 'updatedAt' to the DTO,
-    // but it's not required for the DTOs)
+    public void deleteSavingsGoal(Long id) {
+        goalRepo.deleteById(id);
+    }
+
     private TransactionDTO toDto(SqliteTransaction tx) {
         return new TransactionDTO(tx.getId(), tx.getDescription(), tx.getAmount(), tx.getCategory(), tx.getDate(), tx.isSynced());
     }

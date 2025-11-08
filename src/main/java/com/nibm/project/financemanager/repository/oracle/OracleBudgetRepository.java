@@ -16,4 +16,6 @@ public interface OracleBudgetRepository extends JpaRepository<OracleBudget, Long
             @Param("p_amount") Double amount,
             @Param("p_updated_at") Instant updatedAt
     );
+
+    void deleteByLocalId(Long localId);
 }

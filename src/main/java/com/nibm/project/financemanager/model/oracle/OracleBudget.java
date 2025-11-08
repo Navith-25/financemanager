@@ -28,5 +28,4 @@ public class OracleBudget {
 
     @Column(name = "LOCAL_ID", unique = true)
     private Long localId;
-
 }
