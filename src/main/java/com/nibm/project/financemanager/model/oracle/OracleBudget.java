@@ -19,10 +19,14 @@ public class OracleBudget {
     @SequenceGenerator(name = "budget_seq", sequenceName = "BUDGET_SEQ", allocationSize = 1)
     private Long id;
     private String category;
+
+    @Column(name = "UPDATED_AT")
     private Instant updatedAt;
+
     @Column(nullable = false)
     private Double amount;
-    @Column(unique = true)
+
+    @Column(name = "LOCAL_ID", unique = true)
     private Long localId;
 
 }

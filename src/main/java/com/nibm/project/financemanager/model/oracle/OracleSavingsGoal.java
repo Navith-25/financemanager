@@ -18,8 +18,10 @@ public class OracleSavingsGoal {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "goal_seq")
     @SequenceGenerator(name = "goal_seq", sequenceName = "GOAL_SEQ", allocationSize = 1)
     private Long id;
-    private Instant updatedAt;
     private String name;
+
+    @Column(name = "UPDATED_AT")
+    private Instant updatedAt;
 
     @Column(nullable = false)
     private Double targetAmount;
@@ -27,6 +29,6 @@ public class OracleSavingsGoal {
     @Column(columnDefinition = "NUMBER(10,2) DEFAULT 0.0")
     private Double currentAmount;
 
-    @Column(unique = true)
-    private Long localId; //
+    @Column(name = "LOCAL_ID", unique = true)
+    private Long localId;
 }

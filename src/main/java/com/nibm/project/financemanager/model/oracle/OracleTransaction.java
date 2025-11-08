@@ -21,11 +21,13 @@ public class OracleTransaction {
     private String description;
     private Double amount;
     private String category;
+
+    @Column(name = "UPDATED_AT")
     private Instant updatedAt;
 
     @Column(name = "TRANSACTION_DATE")
     private LocalDate date;
 
-    @Column(unique = true)
+    @Column(name = "LOCAL_ID", unique = true)
     private Long localId;
 }
