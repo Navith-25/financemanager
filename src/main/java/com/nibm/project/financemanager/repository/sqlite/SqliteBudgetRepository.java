@@ -5,6 +5,5 @@ import java.util.List;
 
 public interface SqliteBudgetRepository extends JpaRepository<SqliteBudget, Long> {
     List<SqliteBudget> findByIsSynced(boolean isSynced);
-
     SqliteBudget findByCategory(String category);
 }

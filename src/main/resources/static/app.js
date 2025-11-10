@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
         }).then(res => res.json()),
-        delete: (url) => fetch(url, { method: 'DELETE' }) // ADDED
+        delete: (url) => fetch(url, { method: 'DELETE' })
     };
 
     tabs.forEach(tab => {

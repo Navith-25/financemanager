@@ -96,29 +96,30 @@ public class ReportService {
     }
     public List<ForecastedSavingsReportDTO> getForecastedSavingsReport() {
         String sql = """
-            WITH MonthlyContributions AS (
+            WITH GoalStats AS (
                 SELECT
-                    TO_CHAR(updated_at, 'YYYY-MM') AS month,
-                    SUM(current_amount - LAG(current_amount, 1, 0) OVER (PARTITION BY local_id ORDER BY updated_at)) AS net_change
+                    SUM(current_amount) AS "totalCurrentSavings",
+                    GREATEST(1, MONTHS_BETWEEN(SYSDATE, MIN(updated_at))) AS "totalMonths"
                 FROM
                     CENTRAL_SAVINGS_GOALS
-                GROUP BY
-                    TO_CHAR(updated_at, 'YYYY-MM')
+                WHERE
+                    updated_at IS NOT NULL
             ),
             AvgSavings AS (
-                SELECT AVG(net_change) AS "avgMonthlySave"
-                FROM MonthlyContributions
-                WHERE net_change > 0
-            ),
-            CurrentTotal AS (
-                SELECT SUM(current_amount) AS "currentTotal" FROM CENTRAL_SAVINGS_GOALS
+                SELECT
+                    (GS."totalCurrentSavings" / GS."totalMonths") AS "avgMonthlySave",
+                    GS."totalCurrentSavings"
+                FROM
+                    GoalStats GS
             )
             SELECT
-                TO_CHAR(ADD_MONTHS(TRUNC(SYSDATE, 'MM'), level), 'YYYY-MM') AS "forecastMonth",
-                (NVL(C."currentTotal", 0) + (NVL(A."avgMonthlySave", 0) * level)) AS "forecastedSavings"
+                TO_CHAR(ADD_MONTHS(TRUNC(SYSDATE, 'MM'), level - 1), 'YYYY-MM') AS "forecastMonth",
+                (NVL(A."totalCurrentSavings", 0) + (NVL(A."avgMonthlySave", 0) * (level - 1))) AS "forecastedSavings"
             FROM
-                AvgSavings A, CurrentTotal C
-            CONNECT BY level <= 6
+                AvgSavings A
+            CROSS JOIN
+                (SELECT level FROM DUAL CONNECT BY level <= 7)
+            ORDER BY "forecastMonth"
         """;
         return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(ForecastedSavingsReportDTO.class));
     }

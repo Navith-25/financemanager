@@ -26,7 +26,6 @@ public class SqliteTransaction {
     private boolean isSynced = false;
     private Instant updatedAt;
 
-
 }
 
 

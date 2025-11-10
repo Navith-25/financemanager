@@ -7,9 +7,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 
 public interface OracleTransactionRepository extends JpaRepository<OracleTransaction, Long> {
-
     boolean existsByLocalId(Long localId);
-
     @Procedure(procedureName = "sp_sync_transaction")
     void syncTransaction(
             @Param("p_local_id") Long localId,
