@@ -104,6 +104,18 @@
             <button id="report-btn-forecast">Generate Forecast</button>
             <div id="report-output-forecast" class="report-output"></div>
         </div>
+
+        <div class="report-section">
+            <h3>Local Database Management</h3>
+            <p>Backup or Restore your local SQLite database file.</p>
+
+            <button id="backup-btn-download">Backup Local Data</button>
+
+            <button id="backup-btn-restore">Restore Local Data</button>
+            <input type="file" id="backup-file-input" style="display: none;" accept=".db">
+
+            <div id="backup-status" class="report-output"></div>
+        </div>
     </div>
 </main>
 <script src="app.js"></script>

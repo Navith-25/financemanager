@@ -8,6 +8,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+
+
 import java.util.List;
 import java.util.Map;
 
@@ -21,6 +34,9 @@ public class FinanceController {
     private SyncService syncService;
     @Autowired
     private ReportService reportService;
+
+    private final Path dbPath = Paths.get("local_finance.db");
+
 
     @PostMapping("/transactions")
     public ResponseEntity<TransactionDTO> addTransaction(@RequestBody TransactionDTO dto) {
@@ -110,5 +126,44 @@ public class FinanceController {
     @GetMapping("/reports/forecasted-savings")
     public ResponseEntity<List<ForecastedSavingsReportDTO>> getForecastedSavingsReport() {
         return ResponseEntity.ok(reportService.getForecastedSavingsReport());
+    }
+    @GetMapping("/backup/download")
+    public ResponseEntity<Resource> downloadBackup() {
+        try {
+            Resource resource = new UrlResource(this.dbPath.toUri());
+
+            if (!resource.exists() || !resource.isReadable()) {
+                throw new RuntimeException("Could not read the database file.");
+            }
+
+            String contentType = "application/octet-stream";
+            String headerValue = "attachment; filename=\"local_finance_backup.db\"";
+
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType(contentType))
+                    .header(HttpHeaders.CONTENT_DISPOSITION, headerValue)
+                    .body(resource);
+
+        } catch (IOException e) {
+            return ResponseEntity.internalServerError().body(null);
+        }
+    }
+    @PostMapping("/backup/restore")
+    public ResponseEntity<String> restoreBackup(@RequestParam("file") MultipartFile file) {
+
+        if (file.isEmpty()) {
+            return ResponseEntity.badRequest().body("Please select a file to upload.");
+        }
+
+        try {
+            Files.copy(file.getInputStream(), this.dbPath, StandardCopyOption.REPLACE_EXISTING);
+
+            return ResponseEntity.ok("Restore successful. Please RESTART the application to see the changes.");
+
+        } catch (IOException e) {
+            return ResponseEntity.status(500)
+                    .body("Restore failed (File may be in use). Please stop the application, " +
+                            "manually replace 'local_finance.db', and restart.");
+        }
     }
 }

@@ -111,14 +111,21 @@ public class ReportService {
                     GS."totalCurrentSavings"
                 FROM
                     GoalStats GS
+            ),
+            MonthSeries AS (
+                SELECT level AS "level"
+                FROM DUAL
+                CONNECT BY level <= 7
             )
             SELECT
-                TO_CHAR(ADD_MONTHS(TRUNC(SYSDATE, 'MM'), level - 1), 'YYYY-MM') AS "forecastMonth",
-                (NVL(A."totalCurrentSavings", 0) + (NVL(A."avgMonthlySave", 0) * (level - 1))) AS "forecastedSavings"
+                TO_CHAR(ADD_MONTHS(TRUNC(SYSDATE, 'MM'), MS."level" - 1), 'YYYY-MM') AS "forecastMonth",
+                (NVL(A."totalCurrentSavings", 0) + (NVL(A."avgMonthlySave", 0) * (MS."level" - 1))) AS "forecastedSavings"
             FROM
                 AvgSavings A
             CROSS JOIN
-                (SELECT level FROM DUAL CONNECT BY level <= 7)
+                MonthSeries MS
+            WHERE
+                NVL(A."totalCurrentSavings", 0) > 0 OR NVL(A."avgMonthlySave", 0) > 0
             ORDER BY "forecastMonth"
         """;
         return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(ForecastedSavingsReportDTO.class));

@@ -24,6 +24,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const forecastReportBtn = document.getElementById('report-btn-forecast');
     const forecastReportOutput = document.getElementById('report-output-forecast');
 
+    // --- ADD THESE NEW SELECTORS ---
+    const backupBtn = document.getElementById('backup-btn-download');
+    const restoreBtn = document.getElementById('backup-btn-restore');
+    const backupFileInput = document.getElementById('backup-file-input');
+    const backupStatus = document.getElementById('backup-status');
+    // --------------------------------
+
     const api = {
         get: (url) => fetch(url).then(res => res.json()),
         post: (url, data) => fetch(url, {
@@ -42,6 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById(tab.dataset.tab).classList.add('active');
         });
     });
+
     syncButton.addEventListener('click', async () => {
         syncStatus.textContent = 'Syncing...';
         try {
@@ -52,6 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
             syncStatus.textContent = 'Sync failed.';
         }
     });
+
     txForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const data = {
@@ -81,6 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </li>`;
         });
     }
+
     budgetForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const data = {
@@ -108,6 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </li>`;
         });
     }
+
     goalForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const data = {
@@ -138,6 +149,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </li>`;
         });
     }
+
     txList.addEventListener('click', async (e) => {
         if (e.target.classList.contains('tx-delete')) {
             const id = e.target.dataset.id;
@@ -198,6 +210,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     });
+
     monthlyReportBtn.addEventListener('click', async () => {
         monthlyReportOutput.innerHTML = 'Loading...';
         try {
@@ -230,6 +243,7 @@ document.addEventListener('DOMContentLoaded', () => {
             monthlyReportOutput.innerHTML = 'Error loading report.';
         }
     });
+
     budgetReportBtn.addEventListener('click', async () => {
         budgetReportOutput.innerHTML = 'Loading...';
         try {
@@ -268,8 +282,6 @@ document.addEventListener('DOMContentLoaded', () => {
             budgetReportOutput.innerHTML = 'Error loading report.';
         }
     });
-
-    // Savings Progress Report
     savingsReportBtn.addEventListener('click', async () => {
         savingsReportOutput.innerHTML = 'Loading...';
         try {
@@ -366,6 +378,66 @@ document.addEventListener('DOMContentLoaded', () => {
             forecastReportOutput.innerHTML = table;
         } catch (err) {
             forecastReportOutput.innerHTML = 'Error loading report.';
+        }
+    });
+
+
+    backupBtn.addEventListener('click', () => {
+        backupStatus.innerHTML = 'Downloading backup...';
+        // This is a simple way to trigger the download endpoint
+        window.location.href = '/api/backup/download';
+        backupStatus.innerHTML = 'Backup download initiated.';
+    });
+
+    restoreBtn.addEventListener('click', () => {
+        backupStatus.innerHTML = 'Please select a `.db` file to restore...';
+        backupFileInput.click();
+    });
+
+
+    backupFileInput.addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) {
+            backupStatus.innerHTML = 'Restore cancelled.';
+            return;
+        }
+
+        if (!file.name.endsWith('.db')) {
+            alert('Error: Please select a valid database file (`.db`).');
+            backupStatus.innerHTML = 'Restore cancelled.';
+            return;
+        }
+
+        if (!confirm(`Are you sure you want to restore? This will overwrite the current local database.`)) {
+            backupStatus.innerHTML = 'Restore cancelled.';
+            e.target.value = null;
+            return;
+        }
+
+        backupStatus.innerHTML = 'Uploading and restoring...';
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        try {
+            const response = await fetch('/api/backup/restore', {
+                method: 'POST',
+                body: formData
+            });
+
+            const resultText = await response.text();
+
+            if (!response.ok) {
+                throw new Error(resultText);
+            }
+            alert(resultText);
+            backupStatus.innerHTML = resultText;
+
+        } catch (err) {
+            alert(`Restore Failed: ${err.message}`);
+            backupStatus.innerHTML = `Restore Failed: ${err.message}`;
+        } finally {
+            e.target.value = null;
         }
     });
 
